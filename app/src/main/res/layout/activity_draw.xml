@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.DrawActivity">
+
+
+    <View
+        android:id="@+id/btn_forward"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/ic_arrow_forward_active"
+        app:layout_constraintBottom_toTopOf="@id/buttons_top_guideline"
+        app:layout_constraintStart_toEndOf="@+id/btn_back" />
+
+
+    <View
+        android:id="@+id/btn_back"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+
+        android:layout_marginStart="16dp"
+        android:background="@drawable/ic_arrow_back_active"
+        app:layout_constraintBottom_toTopOf="@id/buttons_top_guideline"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btn_play"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/ic_play"
+        app:layout_constraintBottom_toTopOf="@id/buttons_top_guideline"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <View
+        android:id="@+id/btn_pause"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/ic_pause"
+        app:layout_constraintBottom_toTopOf="@id/buttons_top_guideline"
+
+        app:layout_constraintEnd_toStartOf="@id/btn_play" />
+
+    <View
+        android:id="@+id/btn_layers"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/ic_layers"
+        app:layout_constraintBottom_toTopOf="@id/buttons_top_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_file_plus" />
+
+    <View
+        android:id="@+id/btn_bin"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:background="@drawable/ic_bin"
+        app:layout_constraintBottom_toTopOf="@id/buttons_top_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/btn_file_plus"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/btn_file_plus"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/ic_file_plus"
+        app:layout_constraintBottom_toTopOf="@id/buttons_top_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/btn_layers"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_bin" />
+
+    <ru.ndevelop.yandexcup2024.ui.view.PaletteView
+        android:id="@+id/palette_view"
+        android:layout_width="256dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:translationZ="5dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/buttons_bottom_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="16dp"
+
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/drawing_view_bottom_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/drawing_view_top_guideline">
+
+        <ru.ndevelop.yandexcup2024.ui.view.DrawingView
+            android:id="@+id/drawing_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#D9D9D9" />
+
+        <ru.ndevelop.yandexcup2024.ui.view.FrameAnimatorView
+            android:id="@+id/frame_animator_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#D9D9D9"
+            android:visibility="gone" />
+    </androidx.cardview.widget.CardView>
+
+
+    <LinearLayout
+        android:id="@+id/ll_bottom_buttons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttons_bottom_guideline">
+
+        <View
+            android:id="@+id/btn_pencil"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:background="@drawable/ic_pencil" />
+
+        <View
+            android:id="@+id/btn_brush"
+            android:layout_width="@dimen/button_size"
+            android:layout_height="@dimen/button_size"
+            android:layout_marginStart="@dimen/buttons_distance"
+            android:background="@drawable/ic_brush" />
+
+        <View
+            android:id="@+id/btn_eraser"
+            android:layout_width="@dimen/button_size"
+            android:layout_marginStart="@dimen/buttons_distance"
+            android:layout_height="@dimen/button_size"
+            android:background="@drawable/ic_eraser" />
+
+        <View
+            android:id="@+id/btn_instruments"
+            android:layout_width="@dimen/button_size"
+            android:layout_marginStart="@dimen/buttons_distance"
+            android:layout_height="@dimen/button_size"
+            android:background="@drawable/ic_instruments" />
+
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/drawing_view_top_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="60dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/buttons_top_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="50dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/drawing_view_bottom_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="80dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/buttons_bottom_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="60dp" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

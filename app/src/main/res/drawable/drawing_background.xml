@@ -1,0 +1,12 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background PNG layer -->
+    <item>
+        <bitmap
+            android:src="@drawable/background"
+            android:gravity="fill" />
+    </item>
+
+
+
+</layer-list>
