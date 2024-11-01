@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import ru.ndevelop.yandexcup2024.R
@@ -48,13 +47,17 @@ class DrawActivity : AppCompatActivity() {
         }
     }
 
+    private val onDrawingViewLoaded = object : OnDrawingViewLoaded {
+        override fun onDrawingViewLoaded() {
+         //  framesRepository.addFrame(Frame(drawingView.canvasBitmap))
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityDrawBinding.inflate(layoutInflater)
         setupViews()
-
-
         setContentView(binding.root)
     }
 
@@ -71,7 +74,11 @@ class DrawActivity : AppCompatActivity() {
 
 
         btnClear = binding.btnBin
-        btnClear.setOnClickListener { drawingView.clear() }
+        btnClear.setOnClickListener {
+            drawingView.clear(framesRepository.getFrames().lastOrNull())
+            drawingView.setBackgroundBitmap(framesRepository.getFrames().getOrNull(framesRepository.getFrames().lastIndex-1)?.bitmap)
+            framesRepository.removeLastFrame()
+        }
 
         btnPencil = binding.btnPencil
         btnPencil.setOnClickListener { drawingView.setEraserMode(false) }
@@ -92,7 +99,7 @@ class DrawActivity : AppCompatActivity() {
         btnPlay.setOnClickListener {
             drawingView.isVisible = false
             frameAnimatorView.isVisible = true
-            frameAnimatorView.setFrames(framesRepository.getFrames())
+            frameAnimatorView.setFrames(framesRepository.getFrames() + drawingView.getFrame())
             frameAnimatorView.startAnimation()
         }
 

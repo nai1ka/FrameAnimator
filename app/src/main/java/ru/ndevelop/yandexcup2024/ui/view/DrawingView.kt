@@ -157,25 +157,22 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
     fun getFrame(): Frame {
-        val resultBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val resultCanvas = Canvas(resultBitmap)
-
-        for (line in paths) {
-            resultCanvas.drawPath(line.path, line.paint)
-        }
-
-        return Frame(resultBitmap)
+        return Frame(bitmap = canvasBitmap.copy(Bitmap.Config.ARGB_8888, false))
     }
 
-    fun clear() {
+    fun clear(restoreFrame: Frame? = null) {
         paths.clear()
         redoPaths.clear()
         currentPath.reset()
         drawCanvas.drawColor(Color.WHITE, PorterDuff.Mode.CLEAR)
+
+        if(restoreFrame != null) {
+            drawCanvas.drawBitmap(restoreFrame.bitmap, 0f, 0f, null)
+        }
         invalidate()
     }
 
-    fun setBackgroundBitmap(bitmap: Bitmap) {
+    fun setBackgroundBitmap(bitmap: Bitmap?) {
         backgroundBitmap = bitmap
         invalidate()
     }

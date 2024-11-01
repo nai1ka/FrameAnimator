@@ -12,4 +12,10 @@ class FramesRepository {
     fun getFrames(): List<Frame> {
         return frames
     }
+
+    fun removeLastFrame() {
+        if (frames.isNotEmpty()) {
+            frames.removeAt(frames.size - 1)
+        }
+    }
 }
