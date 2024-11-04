@@ -1,4 +1,4 @@
-package ru.ndevelop.yandexcup2024.ui;
+package ru.ndevelop.yandexcup2024;
 
 import java.io.IOException;
 import java.io.OutputStream;

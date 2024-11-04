@@ -1,0 +1,122 @@
+package ru.ndevelop.yandexcup2024.ui
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import ru.ndevelop.yandexcup2024.ui.models.Frame
+
+@Composable
+fun ListOfFramesDialog(
+    showDialog: Boolean,
+    onFrameClick: (Int) -> Unit,
+    onDismiss: () -> Unit,
+    frames: List<Frame>,
+    onDeleteFrame: (Int) -> Unit,
+    onCreateRandomFrames: (Int) -> Unit
+) {
+
+    var createRandomFrames by remember { mutableStateOf(false) }
+    var selectedNumberOfRandomFrames by remember { mutableIntStateOf(1) }
+    if (showDialog) {
+
+        Dialog(onDismissRequest = {
+            createRandomFrames = false
+            selectedNumberOfRandomFrames = 1
+            onDismiss()
+        }) {
+            Surface(
+                shape = MaterialTheme.shapes.medium, color = Color.White, modifier = Modifier
+                    .padding(16.dp)
+            ) {
+                if (createRandomFrames) {
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                    ) {
+                        Text("Введите количество кадров")
+                        Text("Кадры будут созданы случайно")
+                        Spacer(modifier = Modifier.height(16.dp))
+                        TextField(
+                            value = selectedNumberOfRandomFrames.toString(),
+                            onValueChange = { input ->
+                                if (input.all { it.isDigit() }) {
+                                    selectedNumberOfRandomFrames = input.toInt()
+                                }
+                            },
+
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        TextButton(onClick = {
+                            onCreateRandomFrames(selectedNumberOfRandomFrames)
+                            createRandomFrames = false
+                            selectedNumberOfRandomFrames = 1
+                            onDismiss()
+
+                        }, modifier = Modifier.align(Alignment.End)) {
+                            Text("Создать", color = MaterialTheme.colorScheme.onBackground)
+                        }
+                    }
+                } else {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.widthIn(max = 240.dp)) {
+                        LazyColumn(modifier = Modifier.heightIn(max = 500.dp)) {
+                            itemsIndexed(frames) { index, item ->
+                                FramePreview(item, onClick = {
+                                    onFrameClick(index)
+                                    onDismiss()
+
+                                }, onDelete = {
+                                    onDeleteFrame(index)
+                                })
+                                HorizontalDivider()
+                            }
+                        }
+
+                        Text(
+                            text = "Добавить несколько кадров",
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .clickable {
+                                    createRandomFrames = true
+                                },
+                            color = Color.Blue,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+
+            }
+        }
+    }
+}

@@ -1,4 +1,4 @@
-package ru.ndevelop.yandexcup2024.ui
+package ru.ndevelop.yandexcup2024
 
 import ru.ndevelop.yandexcup2024.ui.models.Frame
 
