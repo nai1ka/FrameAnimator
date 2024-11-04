@@ -15,6 +15,7 @@
         <activity
             android:name=".ui.DrawActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.YandexCup2024">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,6 +1,7 @@
 package ru.ndevelop.yandexcup2024.ui
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -9,6 +10,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -124,22 +127,21 @@ fun MainScreen(
             },
             onCreateRandomFrames = { numberOfRandomFrames ->
                 coroutineScope.launch {
-                    val framesToAdd = mutableListOf<Frame>()
-                    withContext(Dispatchers.Default) {
-                        repeat(numberOfRandomFrames) {
-                            framesToAdd.add(
-                                Frame(
-                                    bitmap = generateRandomShapesBitmap(
-                                        drawingViewInstance.canvasWidth,
-                                        drawingViewInstance.canvasHeight,
-                                        (5..10).random()
-                                    )
+                    drawingViewModel.setIsRandomFramesLoading(true)
+                    val framesToAdd = withContext(Dispatchers.Default) {
+                        List(numberOfRandomFrames) {
+                            Frame(
+                                bitmap = generateRandomShapesBitmap(
+                                    drawingViewInstance.canvasWidth,
+                                    drawingViewInstance.canvasHeight,
+                                    (5..10).random()
                                 )
                             )
                         }
                     }
                     drawingViewModel.setFramesList(screenState.framesList + framesToAdd)
-                    drawingViewModel.setSelectedFrameIndex(screenState.framesList.size)
+                    drawingViewModel.setSelectedFrameIndex(screenState.framesList.size + framesToAdd.size)
+                    drawingViewModel.setIsRandomFramesLoading(false)
                 }
             })
 
@@ -186,7 +188,7 @@ fun MainScreen(
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically ) {
                 IconButton(
                     modifier = Modifier.alpha(alpha),
                     clickable = !screenState.isAnimating,
@@ -248,7 +250,7 @@ fun MainScreen(
                 Spacer(modifier = Modifier.width(Dimensions.iconsDistance))
 
                 IconButton(
-                    modifier = Modifier.alpha(alpha),
+                    modifier = Modifier.alpha(alpha).size(30.dp),
                     clickable = !screenState.isAnimating,
                     painter = painterResource(id = R.drawable.ic_copy),
                     contentDescription = "Copy frame"
@@ -266,14 +268,25 @@ fun MainScreen(
                     drawingViewModel.setSelectedFrameIndex(screenState.selectedFrameIndex + 1)
                 }
                 Spacer(modifier = Modifier.width(Dimensions.iconsDistance))
-                IconButton(
-                    modifier = Modifier.alpha(alpha),
-                    clickable = !screenState.isAnimating,
-                    painter = painterResource(id = R.drawable.ic_layers),
-                    contentDescription = "Show all frames"
-                ) {
-                    showLayers = true
+
+                if(screenState.isRandomFramesLoading){
+                    CircularProgressIndicator(
+                        modifier = Modifier.width(36.dp),
+                        color = MaterialTheme.colorScheme.secondary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
                 }
+                else{
+                    IconButton(
+                        modifier = Modifier.alpha(alpha),
+                        clickable = !screenState.isAnimating,
+                        painter = painterResource(id = R.drawable.ic_layers),
+                        contentDescription = "Show all frames"
+                    ) {
+                        showLayers = true
+                    }
+                }
+
 
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -327,9 +340,9 @@ fun MainScreen(
                             }
                             drawingViewInstance.onCanvasLoaded = {
                                 drawingViewCreated = true
-                                if (screenState.framesList.isEmpty()) {
-                                    drawingViewModel.setFramesList(listOf(it))
-                                }
+//                                if (screenState.framesList.isEmpty()) {
+//                                    drawingViewModel.setFramesList(listOf(it))
+//                                }
                                 drawingViewInstance.setBitmap(
                                     screenState.framesList.getOrNull(screenState.selectedFrameIndex)?.bitmap
                                 )
@@ -393,13 +406,6 @@ fun MainScreen(
                         })
                     Spacer(modifier = Modifier.width(Dimensions.iconsDistance))
 
-                    IconButton(
-                        clickable = !screenState.isAnimating,
-                        painter = painterResource(id = R.drawable.ic_instruments),
-                        contentDescription = "Instruments"
-                    ) {}
-
-                    Spacer(modifier = Modifier.width(Dimensions.iconsDistance))
                     ColorPicker(screenState.selectedColor, clickable = !screenState.isAnimating) {
                         drawingViewModel.setIsColorPickerOpened(!screenState.isColorPickerOpened)
                         drawingViewModel.setIsColorPickerExpanded(false)

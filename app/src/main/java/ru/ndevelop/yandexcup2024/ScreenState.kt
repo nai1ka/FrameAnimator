@@ -15,4 +15,5 @@ data class ScreenState(
     val eraserThickness: Float = 400f,
     val selectedThicknessSelector: Instruments? = null,
     val isGifLoading: Boolean = false,
+    val isRandomFramesLoading: Boolean = false,
 )

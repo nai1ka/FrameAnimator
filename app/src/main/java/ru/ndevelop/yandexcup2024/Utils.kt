@@ -119,7 +119,7 @@ object RandomShapes {
         canvas.restore()
     }
 
-    fun generateRandomShapesBitmap(width: Int, height: Int, shapeCount: Int): Bitmap {
+    suspend fun generateRandomShapesBitmap(width: Int, height: Int, shapeCount: Int): Bitmap {
 
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)

@@ -25,9 +25,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.text.isDigitsOnly
 import ru.ndevelop.yandexcup2024.models.Frame
@@ -59,8 +62,8 @@ fun ListOfFramesDialog(
                         modifier = Modifier
                             .padding(16.dp)
                     ) {
-                        Text("Введите количество кадров")
-                        Text("Кадры будут созданы случайно")
+                        Text("Введите количество кадров", color = Color.Black)
+                        Text("Кадры будут созданы случайно", color = Color.Black)
                         Spacer(modifier = Modifier.height(16.dp))
                         TextField(
                             value = selectedNumberOfRandomFrames,
@@ -81,7 +84,7 @@ fun ListOfFramesDialog(
                                 onDismiss()
                             }
                         }, modifier = Modifier.align(Alignment.End)) {
-                            Text("Создать", color = MaterialTheme.colorScheme.onBackground)
+                            Text("Создать", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                         }
                     }
                 } else {

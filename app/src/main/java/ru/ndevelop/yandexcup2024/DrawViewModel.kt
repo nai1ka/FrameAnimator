@@ -53,4 +53,8 @@ class DrawViewModel : ViewModel() {
     fun setEraserSelected(isSelected: Boolean) {
         _uiState.value = uiState.value.copy(isEraserSelected = isSelected)
     }
+
+    fun setIsRandomFramesLoading(isLoading: Boolean) {
+        _uiState.value = uiState.value.copy(isRandomFramesLoading = isLoading)
+    }
 }
