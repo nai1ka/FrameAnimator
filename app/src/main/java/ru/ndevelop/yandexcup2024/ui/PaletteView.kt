@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ru.ndevelop.yandexcup2024.Dimensions
-import ru.ndevelop.yandexcup2024.Utils.paletteColors
 
 @Composable
 fun PaletteView(isColorPickerExpanded: Boolean, onColorSelected: (Color) -> Unit) {
@@ -46,7 +45,6 @@ fun PaletteView(isColorPickerExpanded: Boolean, onColorSelected: (Color) -> Unit
                             }
                         }
                     }
-
                     Spacer(modifier = Modifier.height(Dimensions.iconsDistance))
                 }
             }

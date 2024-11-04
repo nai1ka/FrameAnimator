@@ -22,6 +22,5 @@ fun ColorPicker(
             .background(color, shape = CircleShape)
             .border(1.dp, MaterialTheme.colorScheme.onBackground, CircleShape)
             .clickable(enabled = clickable, onClick = onClick)
-
     )
 }

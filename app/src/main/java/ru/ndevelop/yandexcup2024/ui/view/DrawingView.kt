@@ -8,14 +8,12 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
-import android.os.Parcelable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import ru.ndevelop.yandexcup2024.R
-import ru.ndevelop.yandexcup2024.ui.models.Frame
-import ru.ndevelop.yandexcup2024.ui.models.LinePath
+import ru.ndevelop.yandexcup2024.models.Frame
+import ru.ndevelop.yandexcup2024.models.LinePath
 import kotlin.math.abs
 
 
@@ -25,7 +23,6 @@ class DrawingView @JvmOverloads constructor(
 
     private val paths = mutableListOf<LinePath>()
     private val redoPaths = mutableListOf<LinePath>()
-
 
     var onDrawingFinishListener: ((Frame) -> Unit)? = null
 
@@ -39,9 +36,6 @@ class DrawingView @JvmOverloads constructor(
 
     init {
         setBackgroundResource(R.drawable.drawing_background)
-
-
-
         setLayerType(LAYER_TYPE_SOFTWARE, null)
     }
 
@@ -52,8 +46,8 @@ class DrawingView @JvmOverloads constructor(
         }
 
 
-    var currentX = 0
-    var currentY = 0
+    private var currentX = 0
+    private var currentY = 0
 
     private val drawingPaint = Paint().apply {
         color = currentColor
@@ -78,17 +72,10 @@ class DrawingView @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        Log.d("DrawingView", "onSizeChanged: w=$w, h=$h")
         canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         drawCanvas = Canvas(canvasBitmap)
 
         onCanvasLoaded?.invoke(getFrame())
-    }
-
-
-    override fun onRestoreInstanceState(state: Parcelable?) {
-        super.onRestoreInstanceState(state)
-        Log.d("DrawingView", "onRestoreInstanceState")
     }
 
     private lateinit var drawCanvas: Canvas
@@ -196,11 +183,12 @@ class DrawingView @JvmOverloads constructor(
             for (path in paths) {
                 drawCanvas.drawPath(path.path, path.paint)
             }
+            onDrawingFinishListener?.invoke(getFrame())
             invalidate()
         }
     }
 
-    // Redo the last undone line
+
     fun redo() {
         if (redoPaths.isNotEmpty()) {
             val lastUndonePath = redoPaths.removeAt(redoPaths.size - 1)
@@ -208,7 +196,8 @@ class DrawingView @JvmOverloads constructor(
             for (path in paths) {
                 drawCanvas.drawPath(path.path, path.paint)
             }
-            invalidate() // Redraw the view
+            onDrawingFinishListener?.invoke(getFrame())
+            invalidate()
         }
     }
 

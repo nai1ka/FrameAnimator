@@ -7,7 +7,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.net.Uri
-import androidx.compose.ui.graphics.Color
 import androidx.core.content.FileProvider
 import ru.ndevelop.yandexcup2024.Utils.generateRandomColor
 import java.io.ByteArrayOutputStream
@@ -23,47 +22,9 @@ object Utils {
             Random.nextInt(256)
         )
     }
-
-    val paletteColors = listOf(
-        listOf(
-            0xFFFFFECC,
-            0xFFFF95D5,
-            0xFFFFD1A9,
-            0xFFFEDCAF,
-            0xFFCCF3FF,
-        ),
-        listOf(
-            0xFFF3ED00,
-            0xFFF8D3E3,
-            0xFFFA9A46,
-            0xFFB18CFE,
-            0xFF94E4FD,
-        ),
-        listOf(
-            0xFFA8DB10,
-            0xFFFB66A4,
-            0xFFFC7600,
-            0xFF9747FF,
-            0xFF00C9FB,
-        ),
-        listOf(
-            0xFF75BB41,
-            0xFFDC0057,
-            0xFFED746C,
-            0xFF4D21B2,
-            0xFF73A8FC,
-        ),
-        listOf(
-            0xFF4E7A25,
-            0xFF9D234C,
-            0xFFFF3D00,
-            0xFF641580,
-            0xFF1976D2,
-        )
-    ).map { it.map { Color(it) } }
 }
 
-object GifUtils{
+object GifUtils {
     suspend fun createGifByteArray(
         bitmaps: List<Bitmap>,
         delayMs: Int = 100,
@@ -79,7 +40,16 @@ object GifUtils{
             gifEncoder.setDelay(delayMs)
 
             for (bitmap in bitmaps) {
-                gifEncoder.addFrame(bitmap)
+
+                val bitmapWithWhiteBackground = Bitmap.createBitmap(
+                    bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888
+                )
+                val canvas = Canvas(bitmapWithWhiteBackground)
+                canvas.drawColor(android.graphics.Color.WHITE)
+                canvas.drawBitmap(bitmap, 0f, 0f, null)
+
+
+                gifEncoder.addFrame(bitmapWithWhiteBackground)
             }
 
             gifEncoder.finish()

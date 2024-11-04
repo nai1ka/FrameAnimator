@@ -1,4 +1,4 @@
-package ru.ndevelop.yandexcup2024.ui.models
+package ru.ndevelop.yandexcup2024.models
 
 import android.graphics.Paint
 import android.graphics.Path

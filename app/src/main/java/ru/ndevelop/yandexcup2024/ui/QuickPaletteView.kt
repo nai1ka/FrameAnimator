@@ -26,6 +26,7 @@ fun QuickPaletteView(onExpand: () -> Unit = {}, onColorSelected: (Color) -> Unit
             IconButton(
                 painter = painterResource(id = R.drawable.ic_palette),
                 contentDescription = "Back",
+                tint = Color.White,
                 onClick = onExpand
             )
             for (color in listOf(

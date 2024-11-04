@@ -12,7 +12,6 @@ class DrawActivity : androidx.activity.ComponentActivity() {
             AppTheme {
                 MainScreen()
             }
-
         }
     }
 }

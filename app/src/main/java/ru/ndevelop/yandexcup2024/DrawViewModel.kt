@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import ru.ndevelop.yandexcup2024.ui.models.Frame
+import ru.ndevelop.yandexcup2024.models.Frame
 
 class DrawViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ScreenState())
@@ -33,6 +33,7 @@ class DrawViewModel : ViewModel() {
     fun setSelectedFrameIndex(index: Int) {
         _uiState.value = uiState.value.copy(selectedFrameIndex = index)
     }
+
     fun setPencilThickness(thickness: Float) {
         _uiState.value = uiState.value.copy(pencilThickness = thickness)
     }
@@ -49,5 +50,7 @@ class DrawViewModel : ViewModel() {
         _uiState.value = uiState.value.copy(isGifLoading = isLoading)
     }
 
-
+    fun setEraserSelected(isSelected: Boolean) {
+        _uiState.value = uiState.value.copy(isEraserSelected = isSelected)
+    }
 }

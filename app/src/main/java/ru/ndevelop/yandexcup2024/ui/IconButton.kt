@@ -47,7 +47,6 @@ fun PressingIconButton(
     onPressed: () -> Unit,
     onReleased: () -> Unit,
     onMoved: (Float) -> Unit = {}
-
 ) {
     Icon(
         painter = painter,

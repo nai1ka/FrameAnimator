@@ -24,6 +24,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -53,15 +56,15 @@ import ru.ndevelop.yandexcup2024.GifUtils.shareGif
 import ru.ndevelop.yandexcup2024.Instruments
 import ru.ndevelop.yandexcup2024.R
 import ru.ndevelop.yandexcup2024.RandomShapes.generateRandomShapesBitmap
-import ru.ndevelop.yandexcup2024.ui.models.Frame
+import ru.ndevelop.yandexcup2024.models.Frame
 import ru.ndevelop.yandexcup2024.ui.view.DrawingView
 import ru.ndevelop.yandexcup2024.ui.view.FrameAnimatorView
 import kotlin.math.max
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 @Composable
-fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
+fun MainScreen(
+    drawingViewModel: DrawViewModel = viewModel()
 ) {
     val context = LocalContext.current
 
@@ -91,7 +94,7 @@ fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
         }
     }
     LaunchedEffect(screenState.pencilThickness, screenState.eraserThickness) {
-        
+
         drawingViewInstance.pencilThickness = screenState.pencilThickness / 10
         drawingViewInstance.eraserThickness = screenState.eraserThickness / 10
     }
@@ -114,10 +117,9 @@ fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
                     drawingViewModel.setFramesList(screenState.framesList.toMutableList().apply {
                         removeAt(index)
                     })
-                    if(index <= screenState.selectedFrameIndex){
+                    if (index <= screenState.selectedFrameIndex) {
                         drawingViewModel.setSelectedFrameIndex(screenState.selectedFrameIndex - 1)
                     }
-
                 }
             },
             onCreateRandomFrames = { numberOfRandomFrames ->
@@ -135,10 +137,9 @@ fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
                                 )
                             )
                         }
-                        drawingViewModel.setFramesList(screenState.framesList + framesToAdd)
-                        drawingViewModel.setSelectedFrameIndex(screenState.framesList.size)
-
                     }
+                    drawingViewModel.setFramesList(screenState.framesList + framesToAdd)
+                    drawingViewModel.setSelectedFrameIndex(screenState.framesList.size)
                 }
             })
 
@@ -166,7 +167,7 @@ fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 PaletteView(screenState.isColorPickerExpanded) { color ->
-                   drawingViewModel.setSelectedColor(color)
+                    drawingViewModel.setSelectedColor(color)
                     drawingViewInstance.currentColor = color.toArgb()
                     drawingViewModel.setIsColorPickerOpened(false)
                     drawingViewModel.setIsColorPickerExpanded(false)
@@ -190,17 +191,16 @@ fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
                     modifier = Modifier.alpha(alpha),
                     clickable = !screenState.isAnimating,
                     painter = painterResource(id = R.drawable.ic_arrow_back_active),
-                    contentDescription = "Back"
+                    contentDescription = "Undo"
                 ) {
                     drawingViewInstance.undo()
                 }
-                Spacer(modifier = Modifier.width(Dimensions.iconsDistance))
 
                 IconButton(
                     modifier = Modifier.alpha(alpha),
                     clickable = !screenState.isAnimating,
                     painter = painterResource(id = R.drawable.ic_arrow_forward_active),
-                    contentDescription = "Back"
+                    contentDescription = "Redo"
                 ) {
                     drawingViewInstance.redo()
                 }
@@ -209,15 +209,16 @@ fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
                 IconButton(modifier = Modifier.alpha(alpha),
                     clickable = !screenState.isAnimating,
                     painter = painterResource(id = R.drawable.ic_bin),
-                    contentDescription = "Back",
+                    contentDescription = "Bin",
                     onLongClick = {
                         drawingViewModel.setFramesList(emptyList())
                         drawingViewModel.setSelectedFrameIndex(0)
                     }) {
                     if (screenState.selectedFrameIndex in screenState.framesList.indices) {
-                        drawingViewModel.setFramesList(screenState.framesList.toMutableList().apply {
-                            removeAt(screenState.selectedFrameIndex)
-                        })
+                        drawingViewModel.setFramesList(
+                            screenState.framesList.toMutableList().apply {
+                                removeAt(screenState.selectedFrameIndex)
+                            })
 
                     }
                     drawingViewModel.setSelectedFrameIndex(screenState.selectedFrameIndex - 1)
@@ -227,11 +228,40 @@ fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
                     modifier = Modifier.alpha(alpha),
                     clickable = !screenState.isAnimating,
                     painter = painterResource(id = R.drawable.ic_file_plus),
-                    contentDescription = "Back"
+                    contentDescription = "Add frame"
                 ) {
                     drawingViewModel.setFramesList(screenState.framesList.toMutableList().apply {
-                        add(screenState.selectedFrameIndex+1, Frame(Bitmap.createBitmap(drawingViewInstance.canvasWidth, drawingViewInstance.canvasHeight, Bitmap.Config.ARGB_8888)))
+                        add(
+                            screenState.selectedFrameIndex + 1,
+                            Frame(
+                                Bitmap.createBitmap(
+                                    drawingViewInstance.canvasWidth,
+                                    drawingViewInstance.canvasHeight,
+                                    Bitmap.Config.ARGB_8888
+                                )
+                            )
+                        )
                     })
+                    drawingViewModel.setSelectedFrameIndex(screenState.selectedFrameIndex + 1)
+                }
+                Spacer(modifier = Modifier.width(Dimensions.iconsDistance))
+
+                IconButton(
+                    modifier = Modifier.alpha(alpha),
+                    clickable = !screenState.isAnimating,
+                    painter = painterResource(id = R.drawable.ic_copy),
+                    contentDescription = "Copy frame"
+                ) {
+                    if (screenState.selectedFrameIndex in screenState.framesList.indices) {
+                        drawingViewModel.setFramesList(
+                            screenState.framesList.toMutableList().apply {
+                                add(
+                                    screenState.selectedFrameIndex,
+                                    screenState.framesList[screenState.selectedFrameIndex]
+                                )
+                            })
+
+                    }
                     drawingViewModel.setSelectedFrameIndex(screenState.selectedFrameIndex + 1)
                 }
                 Spacer(modifier = Modifier.width(Dimensions.iconsDistance))
@@ -239,31 +269,16 @@ fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
                     modifier = Modifier.alpha(alpha),
                     clickable = !screenState.isAnimating,
                     painter = painterResource(id = R.drawable.ic_layers),
-                    contentDescription = "Back"
+                    contentDescription = "Show all frames"
                 ) {
                     showLayers = true
-                }
-                Spacer(modifier = Modifier.width(Dimensions.iconsDistance))
-                IconButton(
-                    modifier = Modifier.alpha(alpha),
-                    clickable = !screenState.isAnimating,
-                    painter = painterResource(id = R.drawable.ic_copy),
-                    contentDescription = "Back"
-                ) {
-                    if (screenState.selectedFrameIndex in screenState.framesList.indices) {
-                        drawingViewModel.setFramesList(screenState.framesList.toMutableList().apply {
-                            add(screenState.selectedFrameIndex, screenState.framesList[screenState.selectedFrameIndex])
-                        })
-
-                    }
-                    drawingViewModel.setSelectedFrameIndex(screenState.selectedFrameIndex + 1)
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
 
                 IconButton(
                     painter = painterResource(id = R.drawable.ic_pause),
-                    contentDescription = "Back"
+                    contentDescription = "Pause"
                 ) {
                     drawingViewModel.setAnimation(false)
 
@@ -273,7 +288,8 @@ fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
                 Spacer(modifier = Modifier.width(Dimensions.iconsDistance))
                 IconButton(
                     painter = painterResource(id = R.drawable.ic_play),
-                    contentDescription = "Back"
+                    clickable = !screenState.isAnimating,
+                    contentDescription = "Play"
                 ) {
                     drawingViewModel.setAnimation(true)
                     drawingViewModel.setIsColorPickerExpanded(false)
@@ -299,24 +315,29 @@ fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
                     } else {
                         AndroidView(factory = {
                             drawingViewInstance.onDrawingFinishListener = {
-                                drawingViewModel.setFramesList(screenState.framesList.toMutableList().apply {
-                                    if (screenState.selectedFrameIndex in screenState.framesList.indices) set(
-                                        screenState.selectedFrameIndex,
-                                        it
-                                    )
-                                    else add(it)
-                                })
+                                drawingViewModel.setFramesList(
+                                    screenState.framesList.toMutableList().apply {
+                                        if (screenState.selectedFrameIndex in screenState.framesList.indices) set(
+                                            screenState.selectedFrameIndex,
+                                            it
+                                        )
+                                        else add(it)
+                                    })
                             }
                             drawingViewInstance.onCanvasLoaded = {
                                 drawingViewCreated = true
-                                if(screenState.framesList.isEmpty()){
+                                if (screenState.framesList.isEmpty()) {
                                     drawingViewModel.setFramesList(listOf(it))
                                 }
                                 drawingViewInstance.setBitmap(
                                     screenState.framesList.getOrNull(screenState.selectedFrameIndex)?.bitmap
                                 )
-
                             }
+
+                            drawingViewInstance.currentColor = screenState.selectedColor.toArgb()
+                            drawingViewInstance.eraserThickness = screenState.eraserThickness / 10
+                            drawingViewInstance.pencilThickness = screenState.pencilThickness / 10
+                            drawingViewInstance.setEraserMode(screenState.isEraserSelected)
                             drawingViewInstance
                         })
                     }
@@ -329,8 +350,11 @@ fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
                 Row(modifier = Modifier.alpha(alpha)) {
                     PressingIconButton(modifier = Modifier,
                         painter = painterResource(id = R.drawable.ic_pencil),
-                        contentDescription = "Back",
-                        onClick = { drawingViewInstance.setEraserMode(false) },
+                        contentDescription = "Pencil",
+                        onClick = {
+                            drawingViewModel.setEraserSelected(false)
+                            drawingViewInstance.setEraserMode(false)
+                        },
                         onPressed = {
                             drawingViewModel.setSelectedThicknessSelector(Instruments.PENCIL)
 
@@ -348,8 +372,11 @@ fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
 
                     PressingIconButton(modifier = Modifier,
                         painter = painterResource(id = R.drawable.ic_eraser),
-                        contentDescription = "Back",
-                        onClick = { drawingViewInstance.setEraserMode(true) },
+                        contentDescription = "Eraser",
+                        onClick = {
+                            drawingViewModel.setEraserSelected(true)
+                            drawingViewInstance.setEraserMode(true)
+                        },
                         onPressed = {
                             drawingViewModel.setSelectedThicknessSelector(Instruments.ERASER)
 
@@ -368,7 +395,7 @@ fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
                     IconButton(
                         clickable = !screenState.isAnimating,
                         painter = painterResource(id = R.drawable.ic_instruments),
-                        contentDescription = "Back"
+                        contentDescription = "Instruments"
                     ) {}
 
                     Spacer(modifier = Modifier.width(Dimensions.iconsDistance))
@@ -410,7 +437,6 @@ fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
                         }
                     }
                 }
-
                 if (alpha == 0f) {
                     Slider(
                         value = sliderPosition, onValueChange = {
@@ -428,8 +454,18 @@ fun MainScreen(drawingViewModel: DrawViewModel = viewModel()
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun PreviewMainScreen() {
-    MainScreen()
+fun PreviewMainScreenLight() {
+    MaterialTheme(colorScheme = lightColorScheme()) {
+        MainScreen()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewMainScreenDark() {
+    MaterialTheme(colorScheme = darkColorScheme()) {
+        MainScreen()
+    }
 }

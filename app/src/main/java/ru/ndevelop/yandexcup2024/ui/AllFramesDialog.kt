@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -20,7 +19,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -31,7 +29,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import ru.ndevelop.yandexcup2024.ui.models.Frame
+import androidx.core.text.isDigitsOnly
+import ru.ndevelop.yandexcup2024.models.Frame
 
 @Composable
 fun ListOfFramesDialog(
@@ -42,14 +41,13 @@ fun ListOfFramesDialog(
     onDeleteFrame: (Int) -> Unit,
     onCreateRandomFrames: (Int) -> Unit
 ) {
-
     var createRandomFrames by remember { mutableStateOf(false) }
-    var selectedNumberOfRandomFrames by remember { mutableIntStateOf(1) }
+    var selectedNumberOfRandomFrames by remember { mutableStateOf("1") }
     if (showDialog) {
 
         Dialog(onDismissRequest = {
             createRandomFrames = false
-            selectedNumberOfRandomFrames = 1
+            selectedNumberOfRandomFrames = "1"
             onDismiss()
         }) {
             Surface(
@@ -65,11 +63,9 @@ fun ListOfFramesDialog(
                         Text("Кадры будут созданы случайно")
                         Spacer(modifier = Modifier.height(16.dp))
                         TextField(
-                            value = selectedNumberOfRandomFrames.toString(),
+                            value = selectedNumberOfRandomFrames,
                             onValueChange = { input ->
-                                if (input.all { it.isDigit() }) {
-                                    selectedNumberOfRandomFrames = input.toInt()
-                                }
+                                selectedNumberOfRandomFrames = input
                             },
 
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -78,17 +74,21 @@ fun ListOfFramesDialog(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         TextButton(onClick = {
-                            onCreateRandomFrames(selectedNumberOfRandomFrames)
-                            createRandomFrames = false
-                            selectedNumberOfRandomFrames = 1
-                            onDismiss()
-
+                            if (selectedNumberOfRandomFrames.isNotEmpty() && selectedNumberOfRandomFrames.isDigitsOnly() && selectedNumberOfRandomFrames.toInt() > 0) {
+                                onCreateRandomFrames(selectedNumberOfRandomFrames.toInt())
+                                createRandomFrames = false
+                                selectedNumberOfRandomFrames = "1"
+                                onDismiss()
+                            }
                         }, modifier = Modifier.align(Alignment.End)) {
                             Text("Создать", color = MaterialTheme.colorScheme.onBackground)
                         }
                     }
                 } else {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.widthIn(max = 240.dp)) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.widthIn(max = 240.dp)
+                    ) {
                         LazyColumn(modifier = Modifier.heightIn(max = 500.dp)) {
                             itemsIndexed(frames) { index, item ->
                                 FramePreview(item, onClick = {
@@ -114,8 +114,6 @@ fun ListOfFramesDialog(
                         )
                     }
                 }
-
-
             }
         }
     }

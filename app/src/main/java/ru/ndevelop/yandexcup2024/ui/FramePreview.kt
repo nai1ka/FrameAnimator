@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import ru.ndevelop.yandexcup2024.R
-import ru.ndevelop.yandexcup2024.ui.models.Frame
+import ru.ndevelop.yandexcup2024.models.Frame
 
 @Composable
 fun FramePreview(
@@ -31,7 +31,7 @@ fun FramePreview(
         Spacer(modifier = Modifier.weight(1f))
         IconButton(
             painter = painterResource(id = R.drawable.ic_bin),
-            contentDescription = "",
+            contentDescription = "Bin",
             tint = Color.Red,
             onClick = onDelete
         )

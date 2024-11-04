@@ -7,7 +7,7 @@ import android.os.Looper
 import android.util.AttributeSet
 import android.view.View
 import ru.ndevelop.yandexcup2024.R
-import ru.ndevelop.yandexcup2024.ui.models.Frame
+import ru.ndevelop.yandexcup2024.models.Frame
 
 class FrameAnimatorView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
