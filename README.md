@@ -22,6 +22,7 @@
 
 
 <p align="center">
+  <img src="./main.png" alt="Palette" width="300"/>
   <img src="./palette.png" alt="Palette" width="300"/>
   <img src="./layers.png" alt="Layers" width="300"/>
   <img src="./animation.png" alt="Animation" width="300"/>
