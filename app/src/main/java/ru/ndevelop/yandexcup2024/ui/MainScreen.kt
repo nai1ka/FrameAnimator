@@ -213,6 +213,7 @@ fun MainScreen(
                     onLongClick = {
                         drawingViewModel.setFramesList(emptyList())
                         drawingViewModel.setSelectedFrameIndex(0)
+                        drawingViewInstance.clear()
                     }) {
                     if (screenState.selectedFrameIndex in screenState.framesList.indices) {
                         drawingViewModel.setFramesList(
