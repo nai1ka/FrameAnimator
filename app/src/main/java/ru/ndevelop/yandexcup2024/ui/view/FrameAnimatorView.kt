@@ -15,7 +15,14 @@ class FrameAnimatorView @JvmOverloads constructor(
 
     val frameHandler = Handler(Looper.getMainLooper())
     val frameInterval = 100L
-    private var frames: List<Frame> = emptyList();
+
+    var animationSpeedFactor: Float = 1.0f
+        set(value) {
+            field = value.coerceAtLeast(0.1f).coerceAtMost(2f)
+            frameHandler.removeCallbacks(frameRunnable)
+            frameHandler.post(frameRunnable)
+        }
+    private var frames: List<Frame> = emptyList()
     private var currentFrameIndex = 0
 
     init {
@@ -26,7 +33,7 @@ class FrameAnimatorView @JvmOverloads constructor(
         override fun run() {
             currentFrameIndex = (currentFrameIndex + 1) % frames.size
             invalidate()
-            frameHandler.postDelayed(this, frameInterval)
+            frameHandler.postDelayed(this, (frameInterval / animationSpeedFactor).toLong())
         }
     }
 

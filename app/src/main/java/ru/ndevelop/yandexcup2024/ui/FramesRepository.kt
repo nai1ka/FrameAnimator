@@ -13,6 +13,12 @@ class FramesRepository {
         return frames
     }
 
+    fun removeFrame(index: Int) {
+        if (index in frames.indices) {
+            frames.removeAt(index)
+        }
+    }
+
     fun removeLastFrame() {
         if (frames.isNotEmpty()) {
             frames.removeAt(frames.size - 1)

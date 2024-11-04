@@ -1,6 +1,5 @@
 package ru.ndevelop.yandexcup2024.ui.view
 
-import android.R.attr.radius
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -9,8 +8,9 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
-import android.graphics.RectF
+import android.os.Parcelable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import ru.ndevelop.yandexcup2024.R
@@ -19,12 +19,22 @@ import ru.ndevelop.yandexcup2024.ui.models.LinePath
 import kotlin.math.abs
 
 
-class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) {
+class DrawingView @JvmOverloads constructor(
+    context: Context, attrs: AttributeSet? = null
+) : View(context, attrs) {
 
     private val paths = mutableListOf<LinePath>()
     private val redoPaths = mutableListOf<LinePath>()
+
+
+    var onDrawingFinishListener: ((Frame) -> Unit)? = null
+
+    var onCanvasLoaded: ((Frame) -> Unit)? = null
     private var currentPath = Path()
     private lateinit var canvasBitmap: Bitmap
+
+    val canvasHeight get() = canvasBitmap.height
+    val canvasWidth get() = canvasBitmap.width
 
 
     init {
@@ -68,17 +78,18 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
+        Log.d("DrawingView", "onSizeChanged: w=$w, h=$h")
         canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         drawCanvas = Canvas(canvasBitmap)
 
-        clipPath.reset()
-        clipPath.addRoundRect(
-            0f, 0f, w.toFloat(), h.toFloat(),
-            cornerRadius, cornerRadius,
-            Path.Direction.CW
-        )
+        onCanvasLoaded?.invoke(getFrame())
     }
 
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        super.onRestoreInstanceState(state)
+        Log.d("DrawingView", "onRestoreInstanceState")
+    }
 
     private lateinit var drawCanvas: Canvas
 
@@ -89,21 +100,15 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     }
 
     private var isEraserOn = false
-    private val cornerRadius = 50f
-    private val clipPath = Path()
 
     override fun onDraw(canvas: Canvas) {
-        canvas.save()
-        canvas.clipPath(clipPath)
         super.onDraw(canvas)
 
         backgroundBitmap?.let {
             canvas.drawBitmap(it, 0f, 0f, backgroundPaint)
         }
 
-
         canvas.drawBitmap(canvasBitmap, 0f, 0f, null)
-        canvas.restore()
     }
 
 
@@ -135,9 +140,11 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                 }
 
             }
+
             MotionEvent.ACTION_UP -> {
                 currentPath.lineTo(currentX.toFloat(), currentY.toFloat())
                 drawCanvas.drawPath(currentPath, currentPaint)
+                onDrawingFinishListener?.invoke(getFrame())
                 paths.add(LinePath(currentPath, Paint(currentPaint)))
                 redoPaths.clear()
                 currentPath = Path()
@@ -160,15 +167,18 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         return Frame(bitmap = canvasBitmap.copy(Bitmap.Config.ARGB_8888, false))
     }
 
-    fun clear(restoreFrame: Frame? = null) {
+    fun clear() {
         paths.clear()
         redoPaths.clear()
         currentPath.reset()
         drawCanvas.drawColor(Color.WHITE, PorterDuff.Mode.CLEAR)
+        invalidate()
+    }
 
-        if(restoreFrame != null) {
-            drawCanvas.drawBitmap(restoreFrame.bitmap, 0f, 0f, null)
-        }
+    fun setBitmap(bitmap: Bitmap?) {
+        if (bitmap == null) return
+        clear()
+        drawCanvas.drawBitmap(bitmap, 0f, 0f, null)
         invalidate()
     }
 
@@ -176,6 +186,7 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         backgroundBitmap = bitmap
         invalidate()
     }
+
 
     fun undo() {
         if (paths.isNotEmpty()) {
@@ -204,4 +215,16 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     fun Canvas.clear() {
         drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
     }
+
+    var pencilThickness: Float
+        get() = drawingPaint.strokeWidth
+        set(value) {
+            drawingPaint.strokeWidth = value
+        }
+
+    var eraserThickness: Float
+        get() = eraserPaint.strokeWidth
+        set(value) {
+            eraserPaint.strokeWidth = value
+        }
 }
