@@ -21,6 +21,8 @@
 * ✅ Полноценная поддержка светлой и тёмной тем
 
 
-![App Screenshot](./palette.png)
-![App Screenshot](./layers.png)
-![App Screenshot](./animation.png)
+<p align="center">
+  <img src="./palette.png" alt="Palette" width="300"/>
+  <img src="./layers.png" alt="Layers" width="300"/>
+  <img src="./animation.png" alt="Animation" width="300"/>
+</p>
